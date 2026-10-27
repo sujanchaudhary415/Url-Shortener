@@ -6,8 +6,12 @@ import com.sujan.url_shortener.entity.ShortUrl;
 import com.sujan.url_shortener.service.ShortUrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +27,17 @@ public class ShortUrlController {
                 shortUrl.getShortCode(),
                 shortUrl.getOriginalUrl()
         );
+    }
+
+    @GetMapping("/{shortCode}")
+    public ResponseEntity<Void> redirect(@PathVariable String shortCode){
+        ShortUrl shortUrl=shortUrlService.getByShortCode(shortCode).orElseThrow(()->new org.springframework.web.server.ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Short URL not found"
+        ));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(shortUrl.getOriginalUrl()));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }

@@ -21,6 +21,13 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     @Override
     @Transactional
     public ShortUrl shortenUrl(String originalUrl) {
+        Optional<ShortUrl> existingUrl =
+                shortUrlRepository.findByOriginalUrl(originalUrl);
+
+        if (existingUrl.isPresent()) {
+            return existingUrl.get();
+        }
+
         String shortCode=generateUniqueCode();
         ShortUrl shortUrl=new ShortUrl();
         shortUrl.setOriginalUrl(originalUrl);
