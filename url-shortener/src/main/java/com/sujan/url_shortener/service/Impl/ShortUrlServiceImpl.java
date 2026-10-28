@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -36,8 +37,13 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<ShortUrl> getByShortCode(String shortCode) {
-        return shortUrlRepository.findByShortCode(shortCode);
+        return shortUrlRepository.findByShortCode(shortCode)
+                .filter(ShortUrl::isActive)
+                .filter(shortUrl ->
+                        shortUrl.getExpiresAt()==null ||
+                        shortUrl.getExpiresAt().isAfter(Instant.now()));
     }
 
     private String generateUniqueCode(){
