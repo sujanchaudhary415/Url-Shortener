@@ -4,6 +4,7 @@ import com.sujan.url_shortener.dto.request.CreateShortUrlRequest;
 import com.sujan.url_shortener.dto.response.CreateShortUrlResponse;
 import com.sujan.url_shortener.entity.ShortUrl;
 import com.sujan.url_shortener.exception.NotFoundException;
+import com.sujan.url_shortener.messaging.ClickEventProducer;
 import com.sujan.url_shortener.service.ShortUrlService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.net.URI;
 @RequestMapping("/api/urls")
 public class ShortUrlController {
     private final ShortUrlService shortUrlService;
+    private final ClickEventProducer clickEventProducer;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,6 +35,9 @@ public class ShortUrlController {
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable String shortCode){
         ShortUrl shortUrl=shortUrlService.getByShortCode(shortCode).orElseThrow(()->new NotFoundException("Short URL not found"));
+
+        clickEventProducer.publishClick(shortCode);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(shortUrl.getOriginalUrl()));
 

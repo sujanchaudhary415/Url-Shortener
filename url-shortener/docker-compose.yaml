@@ -26,8 +26,20 @@ services:
     command: redis-server --appendonly yes
     restart: unless-stopped
 
-
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: url-shortener-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: appuser
+      RABBITMQ_DEFAULT_PASS: devpassword
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: unless-stopped
 
 volumes:
   url-shortener-data:
   redis-data:
+  rabbitmq-data:
