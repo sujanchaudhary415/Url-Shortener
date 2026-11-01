@@ -5,6 +5,9 @@ import java.util.List;
 
 public record ClickAnalyticsResponse(
         String shortCode,
-        long totalCLicks,
-        List<Instant>clicks
+        long totalClicks,
+        int totalPages,
+        int currentPage,
+        int pageSize,
+        List<Instant> clicks
 ) {}
