@@ -23,6 +23,7 @@ public class ClickAnalyticsServiceImpl implements ClickAnalyticsService {
 
     private final ClickRepository clickRepository;
     private final ShortUrlRepository shortUrlRepository;
+
     @Override
     @Transactional(readOnly = true)
     public ClickAnalyticsResponse getAnalytics(String shortCode, int page,int size

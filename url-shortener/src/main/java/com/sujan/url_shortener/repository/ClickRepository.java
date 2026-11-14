@@ -11,4 +11,5 @@ public interface ClickRepository extends JpaRepository<Click,Long> {
     Long countByShortCode(String shortCode);
     Page<Click> findByShortCodeOrderByClickedAtDesc(String shortCode, Pageable pageable);
 
+
 }
