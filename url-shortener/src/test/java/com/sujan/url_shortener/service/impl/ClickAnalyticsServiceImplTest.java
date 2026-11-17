@@ -92,7 +92,7 @@ public class ClickAnalyticsServiceImplTest {
                 Instant.parse("2026-11-02T10:00:00Z")
         );
 
-        Page<Click>clickPage=new PageImpl<>(List.of(click1,click2),PageRequest.of(0,10),2);
+        Page<Click>clickPage=new PageImpl<>(List.of(click2,click1),PageRequest.of(0,10),2);
         when(clickRepository.findByShortCodeOrderByClickedAtDesc(eq(shortCode),any(Pageable.class))).thenReturn(clickPage);
 
         //Act
