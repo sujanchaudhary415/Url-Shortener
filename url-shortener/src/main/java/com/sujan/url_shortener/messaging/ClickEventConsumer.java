@@ -19,7 +19,9 @@ public class ClickEventConsumer {
 
     @RabbitListener(queues = RabbitMQConfig.CLICK_QUEUE)
     public void consumeClickEvent(String message){
+
         log.info("RabbitMQ message received: {}", message);
+
 
         try {
            ClickEvent event=objectMapper.readValue(message, ClickEvent.class);
