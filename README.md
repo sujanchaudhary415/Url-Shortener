@@ -1,21 +1,32 @@
 # URL Shortener
 
-A backend URL Shortener application built using Java and Spring Boot. 
-It converts long URLs into short, unique links and tracks click analytics 
-using asynchronous messaging.
+A backend URL Shortener application built using **Java 21 and Spring Boot 4**. The application converts long URLs into short, unique links and provides click analytics through asynchronous event processing.
 
-## Features
+Built to demonstrate backend development concepts including REST APIs, caching, asynchronous messaging, database persistence, pagination, and containerization.
 
-- Create unique short URLs
-- Redirect users to original URLs
-- Track click analytics
-- Asynchronous click processing using RabbitMQ
-- Redis caching for faster URL lookups
-- Paginated analytics
-- PostgreSQL database persistence
-- Retry mechanism and Dead Letter Queue
-- REST API documentation using Swagger
-- Docker Compose support
+## Live Demo
+
+- **Live Application:** https://url-shortener-api-6o4m.onrender.com
+- **Swagger API Documentation:** https://url-shortener-api-6o4m.onrender.com/swagger-ui/index.html
+- **GitHub Repository:** https://github.com/sujanchaudhary415/Url-Shortener
+
+> Note: The application is hosted on free-tier infrastructure. The first request after inactivity may take some time because the service can sleep.
+
+## Key Features
+
+- Generate unique short URLs using secure random code generation.
+- Redirect users to their original URLs using HTTP 302.
+- Redis caching for faster URL lookups.
+- Asynchronous click event processing using RabbitMQ.
+- Click analytics with paginated results.
+- PostgreSQL persistence using Spring Data JPA.
+- Database schema versioning and migrations using Flyway.
+- Automatic retry mechanism for failed message processing.
+- Dead Letter Queue (DLQ) for messages that fail after retries.
+- Request validation and centralized exception handling.
+- REST API documentation using Swagger / OpenAPI.
+- Unit and integration testing using JUnit 5 and Mockito.
+- Dockerized application with Docker Compose support.
 
 ## Technology Stack
 
@@ -24,19 +35,21 @@ using asynchronous messaging.
 | Java 21 | Programming language |
 | Spring Boot 4 | Backend framework |
 | Spring Data JPA | Database operations |
-| PostgreSQL | Persistent database |
-| Redis | URL caching |
-| RabbitMQ | Asynchronous click event processing |
-| Flyway | Database migrations |
+| PostgreSQL | Persistent data storage |
+| Redis | Caching frequently accessed URLs |
+| RabbitMQ | Asynchronous event processing |
+| Flyway | Database schema migrations |
 | Maven | Build and dependency management |
-| JUnit 5 & Mockito | Unit testing |
-| Docker & Docker Compose | Containerization |
+| JUnit 5 | Unit and integration testing |
+| Mockito | Mocking dependencies |
+| Docker | Application containerization |
+| Docker Compose | Local development environment |
 | Swagger / OpenAPI | API documentation |
 | Postman | API testing |
 
 ## System Architecture
 
-The application uses Redis for caching frequently accessed URLs and RabbitMQ for asynchronous click event processing.
+The application uses Redis to cache frequently accessed short URLs and RabbitMQ to process click events asynchronously.
 
 ```mermaid
 flowchart TD
@@ -46,27 +59,36 @@ flowchart TD
     C -->|Cache Miss| D[PostgreSQL]
     D --> C
 
-    B -->|Redirect| A
+    B -->|HTTP 302 Redirect| A
 
     B -->|Publish Click Event| E[RabbitMQ]
     E --> F[Click Event Consumer]
     F --> G[PostgreSQL Click Analytics]
+
+    E -. Failed after retries .-> H[Dead Letter Queue]
 ```
 
-### What this diagram explains
+### Request Flow
 
-1. Client requests a short URL.
-2. Spring Boot checks Redis for the short URL.
-3. If it's not cached, the application retrieves it from PostgreSQL.
-4. The application redirects the client.
+1. A client requests a short URL.
+2. Spring Boot checks Redis for the corresponding URL.
+3. On a cache miss, the application retrieves the URL from PostgreSQL.
+4. The application redirects the client to the original URL.
 5. A click event is published to RabbitMQ.
-6. A consumer processes the event and saves click analytics in PostgreSQL.
+6. A separate consumer processes the event and stores click analytics in PostgreSQL.
+7. Failed message processing is handled through retries and a Dead Letter Queue.
 
-## API Endpoints
+## REST API Endpoints
 
-Base URL: `http://localhost:8080`
+### Base URLs
 
-| Method | Endpoint | Description | Success Status |
+**Local:**
+`http://localhost:8080`
+
+**Production:**
+`https://url-shortener-api-6o4m.onrender.com`
+
+| Method | Endpoint | Description | Status |
 |---|---|---|---|
 | POST | `/api/urls` | Create a short URL | 201 Created |
 | GET | `/api/urls/{shortCode}` | Redirect to original URL | 302 Found |
@@ -74,8 +96,9 @@ Base URL: `http://localhost:8080`
 
 ### 1. Create Short URL
 
-**Request:**
-`POST /api/urls`
+**Endpoint:** `POST /api/urls`
+
+Request:
 
 ```json
 {
@@ -83,21 +106,27 @@ Base URL: `http://localhost:8080`
 }
 ```
 
+Creates a short URL and returns the generated short code.
+
 ### 2. Redirect to Original URL
 
-**Request:**
-
-`GET /api/urls/{shortCode}`
+**Endpoint:** `GET /api/urls/{shortCode}`
 
 Returns HTTP `302 Found` with the original URL in the `Location` response header.
 
 ### 3. Retrieve Click Analytics
 
-**Request:**
+**Endpoint:** `GET /api/analytics/{shortCode}?page=0&size=10`
 
-`GET /api/analytics/{shortCode}?page=0&size=10`
+Returns paginated click analytics, including:
 
-Returns paginated click analytics, including total clicks and click timestamps.
+- Short code
+- Total clicks
+- Total pages
+- Current page
+- Page size
+- Click timestamps
+
 ## Getting Started
 
 ### Prerequisites
@@ -108,43 +137,77 @@ Make sure you have installed:
 - Docker Desktop
 - Git
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/url-shortener.git
-cd url-shortener
+git clone https://github.com/sujanchaudhary415/Url-Shortener.git
+cd Url-Shortener/url-shortener
 ```
-### 2. Start the application
 
-Build and start the application and its dependencies:
+### 2. Start the Application
+
+Build and start the application and its dependencies using Docker Compose:
 
 ```bash
 docker compose up -d --build
 ```
 
-Remember to replace `YOUR_USERNAME` in the Git clone URL with your actual GitHub username.
+This starts:
 
-### 3. Add Testing
+- Spring Boot application
+- PostgreSQL
+- Redis
+- RabbitMQ
 
-```markdown
+### 3. Access the Application
+
+| Service | URL |
+|---|---|
+| Application | http://localhost:8080 |
+| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| RabbitMQ Management | http://localhost:15672 |
+
+### 4. Stop the Application
+
+```bash
+docker compose down
+```
+
+Docker volumes preserve database and service data when containers are stopped this way.
+
 ## Testing
 
 The project includes unit tests using JUnit 5 and Mockito, along with integration tests.
 
-Run the tests using:
+Run the test suite using:
 
 ```bash
 mvn test
 ```
-My integration tests require PostgreSQL, Redis, and RabbitMQ, start those dependencies before running the tests.
 
-### 4. Add Postman Collection
+Integration tests require the relevant PostgreSQL, Redis, and RabbitMQ services to be running.
 
-```markdown
 ## Postman Collection
 
 A Postman collection is included in the repository:
 
-`urlshortener.postman_collection.json`
+`Url-Shortener.postman_collection.json`
 
-Import this file into Postman to test the API endpoints.
+Import this collection into Postman to test the available API endpoints.
+
+## Deployment
+
+The application is deployed using:
+
+- Render for the Spring Boot application and PostgreSQL database.
+- Render Key Value for Redis-compatible caching.
+- CloudAMQP for hosted RabbitMQ messaging.
+- Docker for building and packaging the application.
+
+Production configuration is supplied through environment variables rather than hardcoded production credentials.
+
+## Author
+
+**Sujan Chaudhary**
+
+GitHub: https://github.com/sujanchaudhary415
