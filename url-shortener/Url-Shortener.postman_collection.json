@@ -1,0 +1,99 @@
+{
+  "info": {
+    "_postman_id": "7cfe0c35-32f2-4394-b3d7-320e0736020f",
+    "name": "Url-Shortener",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34083886"
+  },
+  "item": [
+    {
+      "name": "create short url",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalUrl\": \"https://www.example.com/products/123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/urls",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "urls"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Redirect url",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalUrl\": \"https://www.example.com/products/123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/urls/wGYpJbh",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "urls",
+            "wGYpJbh"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"originalUrl\": \"https://www.example.com/products/123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/analytics/yjRBGOr",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "analytics",
+            "yjRBGOr"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
