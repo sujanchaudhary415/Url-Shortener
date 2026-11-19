@@ -6,7 +6,6 @@ Built to demonstrate backend development concepts including REST APIs, caching, 
 
 ## Live Demo
 
-- **Live Application:** https://url-shortener-api-6o4m.onrender.com
 - **Swagger API Documentation:** https://url-shortener-api-6o4m.onrender.com/swagger-ui/index.html
 - **GitHub Repository:** https://github.com/sujanchaudhary415/Url-Shortener
 
